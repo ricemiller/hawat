@@ -3,9 +3,11 @@ package main
 import (
     "fmt"
     "time"
-    "os"
+    //"os"
     "bufio"
     "strings"
+    "./board"
+
 )
 
 var x int
@@ -36,8 +38,8 @@ func readUntilCMD(r *bufio.Reader, s string) {
 
 func UCIinit(r *bufio.Reader) {
     readUntilCMD(r, "uci")
-    fmt.Println("id name ", ENGINE_NAME)
-    fmt.Println("id author ", ENGINE_AUTHOR)
+    fmt.Println("id name", ENGINE_NAME)
+    fmt.Println("id author", ENGINE_AUTHOR)
     // Send Options
     fmt.Println("uciok")
 
@@ -53,7 +55,7 @@ func UCIinit(r *bufio.Reader) {
 
 
 
-
+/*
 
 
 func main() {
@@ -83,5 +85,17 @@ func main() {
                 os.Exit(0)
         }
     }
+}
+*/
+func main() {
+    var b board.Board
+    b.Init(board.WHITE_SIDE)
+    b.Print()
+    fmt.Println(b.CheckEnemy(0x00))
+    fmt.Println(b.CheckEnemy(0x33))
+    fmt.Println(b.CheckEnemy(0x77))
+    fmt.Println(b.CheckEmpty(0x00))
+    fmt.Println(b.CheckEmpty(0x33))
+    fmt.Println(b.CheckEmpty(0x77))
 }
 

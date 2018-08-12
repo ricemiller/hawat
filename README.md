@@ -1,1 +1,1 @@
-# Hawat is a UCI engine written in Go
+# Hawat will be a UCI chess engine written in Go
