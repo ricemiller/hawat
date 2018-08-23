@@ -7,7 +7,6 @@ import (
     "bufio"
     "strings"
     "./board"
-
 )
 
 var x int
@@ -91,11 +90,5 @@ func main() {
     var b board.Board
     b.Init(board.WHITE_SIDE)
     b.Print()
-    fmt.Println(b.CheckEnemy(0x00))
-    fmt.Println(b.CheckEnemy(0x33))
-    fmt.Println(b.CheckEnemy(0x77))
-    fmt.Println(b.CheckEmpty(0x00))
-    fmt.Println(b.CheckEmpty(0x33))
-    fmt.Println(b.CheckEmpty(0x77))
 }
 
