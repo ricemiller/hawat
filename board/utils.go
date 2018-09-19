@@ -4,8 +4,8 @@ import (
     "strconv"
 )
 
-func CheckValidPosition(pos int) bool {
-    return ((pos & 0x88) == 0)
+func CheckValidSquare(sq int) bool {
+    return ((sq & 0x88) == 0)
 }
 
 
@@ -19,7 +19,7 @@ func ParseAlg_0x88(square string) int8{
 }
 
 func Parse0x88_Alg(square int8) string{
-    if !CheckValidPosition(int(square)) {
+    if !CheckValidSquare(int(square)) {
         return ""
     }
 

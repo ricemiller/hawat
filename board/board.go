@@ -2,6 +2,7 @@ package board
 
 import (
     "fmt"
+    "strings"
 )
 
 // 0x88 board representation
@@ -15,15 +16,11 @@ http://www.chessengine.co.uk/2015/03/24/0x88-board/
 const WHITE_SIDE = 1
 const BLACK_SIDE = -1
 
-const WHITE_TURN = true
-const BLACK_TURN = false
-
 type Board struct {
-    Position            [128]int8
+    Square            [128]int8
     PosBK               int
     PosWK               int
     SidePlaying         int8
-    Turn                bool
     WhiteCastleKing     bool
     WhiteCastleQueen    bool
     BlackCastleKing     bool
@@ -34,35 +31,45 @@ type Board struct {
 
 }
 
-func (b *Board) Init(side int8) {
-    b.SetFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-    b.PosBK = 0x74
-    b.PosWK = 0x04
-    b.SidePlaying = side
+func (b *Board) Init() {
+    b.SetFEN(strings.Fields("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
+    b.SidePlaying = WHITE_SIDE
 }
 
-func (b* Board) CheckEnemy(pos int) bool {
-    return (b.Position[pos]*b.SidePlaying < 0)
+func (b* Board) CheckEnemy(sq int) bool {
+    return (b.Square[sq]*b.SidePlaying < 0)
 
 }
 
-func (b* Board) CheckEmpty(pos int) bool {
-    return b.Position[pos] == EMPTY
+func (b* Board) CheckEmpty(sq int) bool {
+    return b.Square[sq] == EMPTY
 }
+
+func (b* Board) Moves(moves []string){
+    //TO DO
+}
+
 
 func (b *Board) Print() {
     var s = []string{}
-    for i := 0; i < 0x88; i++ {
-        if CheckValidPosition(i) {
-            s = append(s, fmt.Sprintf("%d", b.Position[i]))
+    var board = [][]string{}
+
+    for i := 0; i < 0x80; i++ {
+        if CheckValidSquare(i) {
+            s = append(s, fmt.Sprintf("%d", b.Square[i]))
 
             if (i ^ 0x07) % 0x10 == 0 {
-                fmt.Println(s)
+                board = append(board, s)
                 s = make([]string, 0)
             }
         }
     }
-    fmt.Println("Turn:", b.Turn)
+
+    for i := len(board)-1; i >= 0 ; i--{
+        fmt.Println(board[i])
+    }
+
+    fmt.Println("Turn:", b.SidePlaying)
     fmt.Println("White Castle King:", b.WhiteCastleKing)
     fmt.Println("White Castle Queen:", b.WhiteCastleQueen)
     fmt.Println("Black Castle King:", b.BlackCastleKing)

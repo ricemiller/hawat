@@ -1,7 +1,6 @@
 package board
 
 import (
-    "strings"
     "strconv"
 )
 
@@ -12,64 +11,66 @@ http://www.chessengine.co.uk/2015/03/24/0x88-board/
 ************************/
 
 func (b *Board) setPieces(pieces string){
-    pos := 0x70
+    sq := 0x70
 
     for _, p := range pieces{
         switch p {
 
         case 'p':
-            b.Position[pos] = BP
+            b.Square[sq] = BP
         case 'r':
-            b.Position[pos] = BR
+            b.Square[sq] = BR
         case 'n':
-            b.Position[pos] = BN
+            b.Square[sq] = BN
         case 'b':
-            b.Position[pos] = BB
+            b.Square[sq] = BB
         case 'q':
-            b.Position[pos] = BQ
+            b.Square[sq] = BQ
         case 'k':
-            b.Position[pos] = BK
+            b.Square[sq] = BK
+            b.PosBK = sq
         case 'P':
-            b.Position[pos] = WP
+            b.Square[sq] = WP
         case 'R':
-            b.Position[pos] = WR
+            b.Square[sq] = WR
         case 'N':
-            b.Position[pos] = WN
+            b.Square[sq] = WN
         case 'B':
-            b.Position[pos] = WB
+            b.Square[sq] = WB
         case 'Q':
-            b.Position[pos] = WQ
+            b.Square[sq] = WQ
         case 'K':
-            b.Position[pos] = WK
+            b.Square[sq] = WK
+            b.PosWK = sq
 
         case '/':
-            pos &= 0xf0 // go to beginning of row
-            pos -= 0x10 // change row
-            pos -= 0x01 // counters pos++
+            sq &= 0xf0 // go to beginning of row
+            sq -= 0x10 // change row
+            sq -= 0x01 // counters sq++
 
         case '1':
         case '2':
-            pos += 1
+            sq += 1
         case '3':
-            pos += 2
+            sq += 2
         case '4':
-            pos += 3
+            sq += 3
         case '5':
-            pos += 4
+            sq += 4
         case '6':
-            pos += 5
+            sq += 5
         case '7':
-            pos += 6
+            sq += 6
         }
-        pos++
+        sq++
     }
 }
 
 func (b* Board) setSide(side string) {
     if side == "w" {
-        b.Turn = WHITE_TURN
+        b.SidePlaying = WHITE_SIDE
     } else if side == "b" {
-        b.Turn = BLACK_TURN
+        b.SidePlaying = BLACK_SIDE
     }
 }
 
@@ -105,9 +106,18 @@ func (b *Board) setFullMoves(fullMoves string){
     b.FullMoves, _ = strconv.Atoi(fullMoves)
 }
 
-func (b *Board) SetFEN(Fen string) {
-    // CREATE RESET BOARD FUNCTION
-    fen := strings.Fields(Fen)
+func (b *Board) clearBoard() {
+    for i :=0 ; i < 128 ; i++ {
+        b.Square[i] = 0
+    }
+    b.WhiteCastleKing = false
+    b.WhiteCastleQueen = false
+    b.BlackCastleKing = false
+    b.BlackCastleQueen = false
+}
+
+func (b *Board) SetFEN(fen []string) {
+    b.clearBoard()
 
     b.setPieces(fen[0])
     b.setSide(fen[1])
