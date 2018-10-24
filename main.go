@@ -128,7 +128,7 @@ func main() {
 				b.Print()
 
 			case "perft":
-                                b.Perft()
+				b.Perft()
 
 			case "quit":
 				os.Exit(0)

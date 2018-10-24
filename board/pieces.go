@@ -21,6 +21,3 @@ const BK int8 = -3
 const BB int8 = -5
 const BR int8 = -6
 const BQ int8 = -7
-
-
-

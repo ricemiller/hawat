@@ -1,8 +1,8 @@
 package board
 
 import (
-    "fmt"
-    "strings"
+	"fmt"
+	"strings"
 )
 
 // 0x88 board representation
@@ -17,64 +17,62 @@ const WHITE_SIDE = 1
 const BLACK_SIDE = -1
 
 type Board struct {
-    Square            [128]int8
-    PosBK               int
-    PosWK               int
-    SidePlaying         int8
-    WhiteCastleKing     bool
-    WhiteCastleQueen    bool
-    BlackCastleKing     bool
-    BlackCastleQueen    bool
-    EnPassant           int8
-    HalfMoves           int
-    FullMoves           int
-
+	Square           [128]int8
+	PosBK            int
+	PosWK            int
+	SidePlaying      int8
+	WhiteCastleKing  bool
+	WhiteCastleQueen bool
+	BlackCastleKing  bool
+	BlackCastleQueen bool
+	EnPassant        int8
+	HalfMoves        int
+	FullMoves        int
 }
 
 func (b *Board) Init() {
-    b.SetFEN(strings.Fields("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
-    b.SidePlaying = WHITE_SIDE
+	b.SetFEN(strings.Fields("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
+	b.SidePlaying = WHITE_SIDE
 }
 
-func (b* Board) CheckEnemy(sq int) bool {
-    return (b.Square[sq]*b.SidePlaying < 0)
+func (b *Board) CheckEnemy(sq int) bool {
+	return (b.Square[sq]*b.SidePlaying < 0)
 
 }
 
-func (b* Board) CheckEmpty(sq int) bool {
-    return b.Square[sq] == EMPTY
+func (b *Board) CheckEmpty(sq int) bool {
+	return b.Square[sq] == EMPTY
 }
 
-func (b* Board) Moves(moves []string){
-    //TO DO
+func (b *Board) Moves(moves []string) {
+	//TO DO
 }
-
 
 func (b *Board) Print() {
-    var s = []string{}
-    var board = [][]string{}
+	var s = []string{}
+	var board = [][]string{}
 
-    for i := 0; i < 0x80; i++ {
-        if CheckValidSquare(i) {
-            s = append(s, fmt.Sprintf("%d", b.Square[i]))
+	for i := 0; i < 0x80; i++ {
+		if CheckValidSquare(i) {
+			s = append(s, fmt.Sprintf("%d", b.Square[i]))
 
-            if (i ^ 0x07) % 0x10 == 0 {
-                board = append(board, s)
-                s = make([]string, 0)
-            }
-        }
-    }
+			if (i^0x07)%0x10 == 0 {
+				board = append(board, s)
+				s = make([]string, 0)
+			}
+		}
+	}
 
-    for i := len(board)-1; i >= 0 ; i--{
-        fmt.Println(board[i])
-    }
+	for i := len(board) - 1; i >= 0; i-- {
+		fmt.Println(board[i])
+	}
 
-    fmt.Println("Turn:", b.SidePlaying)
-    fmt.Println("White Castle King:", b.WhiteCastleKing)
-    fmt.Println("White Castle Queen:", b.WhiteCastleQueen)
-    fmt.Println("Black Castle King:", b.BlackCastleKing)
-    fmt.Println("Black Castle Queen:", b.BlackCastleQueen)
-    fmt.Println("En Passant:", b.EnPassant)
-    fmt.Println("Half Moves:", b.HalfMoves)
-    fmt.Println("Full Moves:", b.FullMoves)
+	fmt.Println("Turn:", b.SidePlaying)
+	fmt.Println("White Castle King:", b.WhiteCastleKing)
+	fmt.Println("White Castle Queen:", b.WhiteCastleQueen)
+	fmt.Println("Black Castle King:", b.BlackCastleKing)
+	fmt.Println("Black Castle Queen:", b.BlackCastleQueen)
+	fmt.Println("En Passant:", b.EnPassant)
+	fmt.Println("Half Moves:", b.HalfMoves)
+	fmt.Println("Full Moves:", b.FullMoves)
 }
