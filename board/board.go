@@ -17,7 +17,7 @@ const WHITE_SIDE = 1
 const BLACK_SIDE = -1
 
 type Board struct {
-	Square           [128]int8
+	Square           [0x80]int8
 	PosBK            int
 	PosWK            int
 	SidePlaying      int8
@@ -25,7 +25,7 @@ type Board struct {
 	WhiteCastleQueen bool
 	BlackCastleKing  bool
 	BlackCastleQueen bool
-	EnPassant        int8
+	EnPassant        int8 // Points at the square behind the pawn (e2-e4 -> EnPassant=e3)
 	HalfMoves        int
 	FullMoves        int
 }
@@ -35,16 +35,29 @@ func (b *Board) Init() {
 	b.SidePlaying = WHITE_SIDE
 }
 
-func (b *Board) CheckEnemy(sq int) bool {
+func (b *Board) CheckAlly(sq int8) bool {
+	return (b.Square[sq]*b.SidePlaying > 0)
+}
+
+func (b *Board) CheckEnemy(sq int8) bool {
 	return (b.Square[sq]*b.SidePlaying < 0)
-
 }
 
-func (b *Board) CheckEmpty(sq int) bool {
-	return b.Square[sq] == EMPTY
+func (b *Board) CheckEmpty(sq int8) bool {
+	return (b.Square[sq] == EMPTY)
 }
 
-func (b *Board) Moves(moves []string) {
+func (b *Board) Moves() []Move{ //ADD DEPTH LATER ON
+    var moves = []Move{}
+	for i := int8(0); i < 0x78; i++ {
+		if b.CheckAlly(i) {
+            moves = append(moves, b.GenMoves(i, b.Square[i])...)
+			}
+		}
+    return moves
+}
+
+func (b *Board) Perft(moves []string) {
 	//TO DO
 }
 
@@ -52,7 +65,7 @@ func (b *Board) Print() {
 	var s = []string{}
 	var board = [][]string{}
 
-	for i := 0; i < 0x80; i++ {
+	for i := int8(0); i < 0x78; i++ {
 		if CheckValidSquare(i) {
 			s = append(s, fmt.Sprintf("%d", b.Square[i]))
 

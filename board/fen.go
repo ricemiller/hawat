@@ -107,7 +107,7 @@ func (b *Board) setFullMoves(fullMoves string) {
 }
 
 func (b *Board) clearBoard() {
-	for i := 0; i < 128; i++ {
+	for i := 0; i < 0x80; i++ {
 		b.Square[i] = 0
 	}
 	b.WhiteCastleKing = false
