@@ -13,8 +13,6 @@ http://www.craftychess.com/hyatt/boardrep.html
 http://www.chessengine.co.uk/2015/03/24/0x88-board/
 */
 
-const WHITE_SIDE = 1
-const BLACK_SIDE = -1
 
 type Board struct {
 	Square           [0x80]int8
@@ -35,12 +33,12 @@ func (b *Board) Init() {
 	b.SidePlaying = WHITE_SIDE
 }
 
-func (b *Board) CheckAlly(sq int8) bool {
-	return (b.Square[sq]*b.SidePlaying > 0)
+func (b *Board) CheckAlly(sq int8, colourPlaying int8) bool {
+	return (b.Square[sq]*colourPlaying > 0)
 }
 
-func (b *Board) CheckEnemy(sq int8) bool {
-	return (b.Square[sq]*b.SidePlaying < 0)
+func (b *Board) CheckEnemy(sq int8, colourPlaying int8) bool {
+	return (b.Square[sq]*colourPlaying < 0)
 }
 
 func (b *Board) CheckEmpty(sq int8) bool {
@@ -50,7 +48,7 @@ func (b *Board) CheckEmpty(sq int8) bool {
 func (b *Board) Moves() []Move{ //ADD DEPTH LATER ON
     var moves = []Move{}
 	for i := int8(0); i < 0x78; i++ {
-		if b.CheckAlly(i) {
+		if b.CheckAlly(i, b.SidePlaying) {
             moves = append(moves, b.GenMoves(i, b.Square[i])...)
 			}
 		}

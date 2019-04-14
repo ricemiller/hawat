@@ -12,6 +12,9 @@ Piece & 2 != 0 -> Sliding Vertical/Horizontal
 ****************/
 const EMPTY int8 = 0
 
+const WHITE_SIDE = 1
+const BLACK_SIDE = -1
+
 const WP int8 = 1
 const WN int8 = 2
 const WK int8 = 3
