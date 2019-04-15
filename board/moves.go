@@ -75,9 +75,9 @@ func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
    return moves
 }
 
-func (b *Board) genMovesKnight(sq int8, colour int8) []Move{
+func (b *Board) genMovesKnight(sq int8, colour int8) []Move {
    var moves = []Move{}
-   var targets = []int8{0x0e, 0x1f, 0x21, 0x12, -0x0e, -0x1f, -0x21, -0x12}
+    var targets = []int8{0x0e, 0x1f, 0x21, 0x12, -0x0e, -0x1f, -0x21, -0x12}
 
    for _, target := range targets {
        target += sq
@@ -89,9 +89,8 @@ func (b *Board) genMovesKnight(sq int8, colour int8) []Move{
    return moves
 }
 
-func (b *Board) genMovesBishop(sq int8, colour int8) []Move{
+func (b *Board) genMovesSliding(sq int8, colour int8, vectors []int8) []Move {
    var moves = []Move{}
-   var vectors = []int8{0x0f, 0x11, -0x0f, -0x11}
 
    for _, vector := range vectors {
        target := sq + vector
@@ -107,16 +106,21 @@ func (b *Board) genMovesBishop(sq int8, colour int8) []Move{
    return moves
 }
 
-func (b *Board) genMovesRook(sq int8, colour int8) []Move{
-   var moves = []Move{}
 
-   return moves
+func (b *Board) genMovesBishop(sq int8, colour int8) []Move {
+    var vectors = []int8{0x0f, 0x11, -0x0f, -0x11}
+    return b.genMovesSliding(sq, colour, vectors)
 }
-func (b *Board) genMovesQueen(sq int8, colour int8) []Move{
-   var moves = []Move{}
 
-   return moves
+func (b *Board) genMovesRook(sq int8, colour int8) []Move {
+    var vectors = []int8{0x10, 0x01, -0x10, -0x01}
+    return b.genMovesSliding(sq, colour, vectors)
 }
+
+func (b *Board) genMovesQueen(sq int8, colour int8) []Move {
+    return append (b.genMovesBishop(sq, colour), b.genMovesRook(sq, colour)...)
+}
+
 func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    var moves = []Move{}
 
