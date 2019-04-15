@@ -8,33 +8,34 @@ type Move struct {
 
 func (b *Board) GenMoves(sq int8, piece int8) []Move{
     var moves = []Move{}
+    var colour int8
+
+    if piece > 0 {
+       colour = WHITE_SIDE
+    } else {
+       colour = BLACK_SIDE
+    }
+
     switch piece {
     case WP, BP:
-        moves = b.genMovesPawn(sq, piece)
+        moves = b.genMovesPawn(sq, colour)
     case BN, WN:
-        moves = b.genMovesKnight(sq)
+        moves = b.genMovesKnight(sq, colour)
     case BB, WB:
-        moves = b.genMovesBishop(sq)
+        moves = b.genMovesBishop(sq, colour)
     case BR, WR:
-        moves = b.genMovesRook(sq)
+        moves = b.genMovesRook(sq, colour)
     case BQ, WQ:
-        moves = b.genMovesQueen(sq)
+        moves = b.genMovesQueen(sq, colour)
     case BK, WK:
-        moves = b.genMovesKing(sq)
+        moves = b.genMovesKing(sq, colour)
     }
     return moves
 }
 
 
-func (b *Board) genMovesPawn(sq int8, piece int8) []Move {
+func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
    var moves = []Move{}
-   var colour int8
-
-   if piece == WP {
-       colour = 1
-   } else {
-       colour = -1
-   }
 
    push         := sq + 0x10 * colour
    doublePush   := sq + 0x20 * colour
@@ -76,27 +77,37 @@ func (b *Board) genMovesPawn(sq int8, piece int8) []Move {
    return moves
 }
 
-func (b *Board) genMovesKnight(sq int8) []Move{
+func (b *Board) genMovesKnight(sq int8, colour int8) []Move{
+   var moves = []Move{}
+   var targets = []int8{0x0e, 0x1f, 0x21, 0x12, -0x0e, -0x1f, -0x21, -0x12}
+
+   for _, target := range targets {
+       target += sq
+       if CheckValidSquare(target) && !b.CheckAlly(target, colour) {
+           moves = append(moves, Move{sq, target, 0})
+       }
+   }
+
+   return moves
+}
+
+func (b *Board) genMovesBishop(sq int8, colour int8) []Move{
    var moves = []Move{}
 
    return moves
 }
-func (b *Board) genMovesBishop(sq int8) []Move{
+
+func (b *Board) genMovesRook(sq int8, colour int8) []Move{
    var moves = []Move{}
 
    return moves
 }
-func (b *Board) genMovesRook(sq int8) []Move{
+func (b *Board) genMovesQueen(sq int8, colour int8) []Move{
    var moves = []Move{}
 
    return moves
 }
-func (b *Board) genMovesQueen(sq int8) []Move{
-   var moves = []Move{}
-
-   return moves
-}
-func (b *Board) genMovesKing(sq int8) []Move{
+func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    var moves = []Move{}
 
    return moves
