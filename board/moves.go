@@ -71,9 +71,7 @@ func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
        if b.CheckEnemy(captureRight, colour) || b.EnPassant == captureRight {
            moves = append(moves, Move{sq, captureRight, 0})
        }
-   // Initial x2 move
    }
-
    return moves
 }
 
@@ -93,7 +91,19 @@ func (b *Board) genMovesKnight(sq int8, colour int8) []Move{
 
 func (b *Board) genMovesBishop(sq int8, colour int8) []Move{
    var moves = []Move{}
+   var vectors = []int8{0x0f, 0x11, -0x0f, -0x11}
 
+   for _, vector := range vectors {
+       target := sq + vector
+
+        for CheckValidSquare(target) && !b.CheckAlly(target, colour) {
+           moves = append(moves, Move{sq, target, 0})
+           if b.CheckEnemy(target, colour) { //slide until capture
+               break
+           }
+           target += vector
+        }
+    }
    return moves
 }
 
