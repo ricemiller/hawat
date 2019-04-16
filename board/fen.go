@@ -125,5 +125,7 @@ func (b *Board) SetFEN(fen []string) {
 	b.setEnPassant(fen[3])
 	b.setHalfMoves(fen[4])
 	b.setFullMoves(fen[5])
+    b.setThreats(WHITE_SIDE)
+    b.setThreats(BLACK_SIDE)
 
 }

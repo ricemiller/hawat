@@ -21,6 +21,8 @@ const WK int8 = 3
 const WB int8 = 5
 const WR int8 = 6
 const WQ int8 = 7
+const WHITE_CASTLE_KS int8 = 8
+const WHITE_CASTLE_QS int8 = 9
 
 const BP int8 = -1
 const BN int8 = -2
@@ -28,6 +30,8 @@ const BK int8 = -3
 const BB int8 = -5
 const BR int8 = -6
 const BQ int8 = -7
+const BLACK_CASTLE_KS int8 = -8
+const BLACK_CASTLE_QS int8 = -9
 
 func CheckValidSquare(sq int8) bool {
 	return ((int(sq) & 0x88) == 0)

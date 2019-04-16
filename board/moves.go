@@ -33,6 +33,48 @@ func (b *Board) GenMoves(sq int8, piece int8) []Move{
     return moves
 }
 
+func (b *Board) GenThreats(sq int8, piece int8) []Move{
+    var moves = []Move{}
+    var colour int8
+
+    if piece > 0 {
+       colour = WHITE_SIDE
+    } else {
+       colour = BLACK_SIDE
+    }
+
+    switch piece {
+    case WP, BP:
+        moves = b.genThreatsPawn(sq, colour)
+    case BN, WN:
+        moves = b.genMovesKnight(sq, colour)
+    case BB, WB:
+        moves = b.genMovesBishop(sq, colour)
+    case BR, WR:
+        moves = b.genMovesRook(sq, colour)
+    case BQ, WQ:
+        moves = b.genMovesQueen(sq, colour)
+    case BK, WK:
+        moves = b.genMovesKing(sq, colour)
+    }
+    return moves
+}
+
+
+func (b *Board) genThreatsPawn(sq int8, colour int8) []Move { //Only piece that threats are different to moves, necessary for King moves
+    var threats = []Move{}
+
+    captureLeft  := sq + 0x0f * colour
+    captureRight := sq + 0x11 * colour
+
+    if CheckValidSquare(captureLeft) {
+        threats = append (threats, Move{sq, captureLeft, 0})
+    }
+    if CheckValidSquare(captureRight) {
+        threats = append (threats, Move{sq, captureRight, 0})
+    }
+    return threats
+}
 
 func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
    var moves = []Move{}
@@ -85,7 +127,6 @@ func (b *Board) genMovesKnight(sq int8, colour int8) []Move {
            moves = append(moves, Move{sq, target, 0})
        }
    }
-
    return moves
 }
 
@@ -123,6 +164,78 @@ func (b *Board) genMovesQueen(sq int8, colour int8) []Move {
 
 func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    var moves = []Move{}
+   var targets = []int8{0x10, 0x01, -0x10, -0x01, 0x0f, 0x11, -0x0f, -0x11}
+   var squaresCastlingWQ = []int8{0x01, 0x02, 0x03}
+   var squaresCastlingWK = []int8{0x05, 0x06}
+   var squaresCastlingBQ = []int8{0x71, 0x72, 0x73}
+   var squaresCastlingBK = []int8{0x75, 0x76}
+   var castle bool
+
+   for _, target := range targets {
+       target += sq
+       if CheckValidSquare(target) && !b.CheckAlly(target, colour) && !b.CheckThreat(target, colour) {
+           moves = append(moves, Move{sq, target, 0})
+       }
+   }
+
+   // Castling
+   if !b.CheckThreat(sq, colour) { // King cannot castle if in check
+       if colour == WHITE_SIDE {
+           if b.WhiteCastleKing {
+               castle = true
+               for _, square := range squaresCastlingWK {
+                   if b.CheckThreat(square, colour) {
+                       castle = false
+                       break
+                   }
+               }
+               if castle {
+                   moves = append(moves, Move{sq, sq-2, WHITE_CASTLE_KS})
+               }
+           }
+           if b.WhiteCastleQueen {
+               castle = true
+               for _, square := range squaresCastlingWQ {
+                   if b.CheckThreat(square, colour) {
+                       castle = false
+                       break
+                   }
+               }
+               if castle {
+                   moves = append(moves, Move{sq, sq+2, WHITE_CASTLE_QS})
+               }
+           }
+       } else {
+           if b.BlackCastleKing {
+               castle = true
+               for _, square := range squaresCastlingBK {
+                   if b.CheckThreat(square, colour) {
+                       castle = false
+                       break
+                   }
+               }
+               if castle {
+                   moves = append(moves, Move{sq, sq-2, BLACK_CASTLE_KS})
+               }
+           }
+           if b.BlackCastleQueen {
+               castle = true
+               for _, square := range squaresCastlingBQ {
+                   if b.CheckThreat(square, colour) {
+                       castle = false
+                       break
+                   }
+               }
+               if castle {
+                   moves = append(moves, Move{sq, sq+2, BLACK_CASTLE_QS})
+               }
+           }
+
+       }
+   }
+
+
+
 
    return moves
 }

@@ -16,6 +16,8 @@ http://www.chessengine.co.uk/2015/03/24/0x88-board/
 
 type Board struct {
 	Square           [0x80]int8
+	ThreatToBlack    [0x80]bool
+	ThreatToWhite    [0x80]bool
 	PosBK            int
 	PosWK            int
 	SidePlaying      int8
@@ -30,7 +32,14 @@ type Board struct {
 
 func (b *Board) Init() {
 	b.SetFEN(strings.Fields("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
-	b.SidePlaying = WHITE_SIDE
+}
+
+func (b *Board) CheckThreat(sq int8, colourPlaying int8) bool {
+    if colourPlaying == WHITE_SIDE {
+        return b.ThreatToWhite[sq]
+    } else {
+        return b.ThreatToBlack[sq]
+    }
 }
 
 func (b *Board) CheckAlly(sq int8, colourPlaying int8) bool {
@@ -45,7 +54,7 @@ func (b *Board) CheckEmpty(sq int8) bool {
 	return (b.Square[sq] == EMPTY)
 }
 
-func (b *Board) Moves() []Move{ //ADD DEPTH LATER ON
+func (b *Board) Moves() []Move { //ADD DEPTH LATER ON
     var moves = []Move{}
 	for i := int8(0); i < 0x78; i++ {
 		if b.CheckAlly(i, b.SidePlaying) {
@@ -53,6 +62,35 @@ func (b *Board) Moves() []Move{ //ADD DEPTH LATER ON
 			}
 		}
     return moves
+}
+
+func (b *Board) setThreats(colour int8) {
+    var threats = []Move{}
+	for i := int8(0); i < 0x78; i++ {
+
+        // Get all enemmy attack moves
+		if b.CheckEnemy(i, b.SidePlaying) {
+            threats = append(threats, b.GenThreats(i, b.Square[i])...)
+			}
+		}
+
+        // Update threats table
+        if colour == WHITE_SIDE {
+            for i := 0; i < 0x80; i++ {
+                b.ThreatToWhite[i] = false
+            }
+
+            for _, threat := range threats {
+                b.ThreatToWhite[threat.ToSquare] = true
+            }
+        } else {
+            for i := 0; i < 0x80; i++ {
+                b.ThreatToBlack[i] = false
+            }
+            for _, threat := range threats {
+                b.ThreatToBlack[threat.ToSquare] = true
+            }
+        }
 }
 
 func (b *Board) Perft(moves []string) {
