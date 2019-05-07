@@ -97,16 +97,28 @@ func (b *Board) Perft(moves []string) {
 	//TO DO
 }
 
+func (b *Board) DoMove(move Move){
+    b.Square[move.ToSquare] = b.Square[move.FromSquare]
+    b.Square[move.FromSquare] = 0
+}
+
+
+func (b *Board) UndoMove(move Move) {
+    b.Square[move.FromSquare] = b.Square[move.ToSquare]
+    b.Square[move.ToSquare] = move.CapturedPiece
+}
+
+
 func (b *Board) Print() {
 	var s = []string{}
 	var board = [][]string{}
 
 	for i := int8(0); i < 0x78; i++ {
 		if CheckValidSquare(i) {
-			s = append(s, fmt.Sprintf("%d", b.Square[i]))
+			s = append(s, fmt.Sprintf("%s", PieceToChar(b.Square[i])))
 
 			if (i^0x07)%0x10 == 0 {
-				board = append(board, s)
+                board = append(board, s)
 				s = make([]string, 0)
 			}
 		}

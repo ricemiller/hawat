@@ -58,3 +58,34 @@ func Parse0x88_Alg(square int8) string {
 
 	return string([]rune{column, row})
 }
+
+func PieceToChar(piece int8) string {
+    switch piece {
+    case WP:
+        return "P"
+    case WN:
+        return "N"
+    case WB:
+        return "B"
+    case WR:
+        return "R"
+    case WQ:
+        return "Q"
+    case WK:
+        return "K"
+    case BP:
+        return "p"
+    case BN:
+        return "n"
+    case BB:
+        return "b"
+    case BR:
+        return "r"
+    case BQ:
+        return "q"
+    case BK:
+        return "k"
+    }
+    return "."
+}
+
