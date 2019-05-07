@@ -13,14 +13,7 @@ http://www.craftychess.com/hyatt/boardrep.html
 http://www.chessengine.co.uk/2015/03/24/0x88-board/
 */
 
-
-type Board struct {
-	Square           [0x80]int8
-	ThreatToBlack    [0x80]bool
-	ThreatToWhite    [0x80]bool
-	PosBK            int
-	PosWK            int
-	SidePlaying      int8
+type Status struct {
 	WhiteCastleKing  bool
 	WhiteCastleQueen bool
 	BlackCastleKing  bool
@@ -28,6 +21,16 @@ type Board struct {
 	EnPassant        int8 // Points at the square behind the pawn (e2-e4 -> EnPassant=e3)
 	HalfMoves        int
 	FullMoves        int
+}
+
+type Board struct {
+	Square           [0x80]int8
+	ThreatToBlack    [0x80]bool
+	ThreatToWhite    [0x80]bool
+	PosBK            int8
+	PosWK            int8
+	SidePlaying      int8
+    BoardStatus      Status
 }
 
 func (b *Board) Init() {
@@ -69,7 +72,7 @@ func (b *Board) setThreats(colour int8) {
 	for i := int8(0); i < 0x78; i++ {
 
         // Get all enemmy attack moves
-		if b.CheckEnemy(i, b.SidePlaying) {
+		if b.CheckEnemy(i, colour) {
             threats = append(threats, b.GenThreats(i, b.Square[i])...)
 			}
 		}
@@ -97,15 +100,165 @@ func (b *Board) Perft(moves []string) {
 	//TO DO
 }
 
-func (b *Board) DoMove(move Move){
+func (b *Board) DoMove(move Move) (bool, Status) {
+    legal := true
+    oldStatus := b.BoardStatus
+
+    // Save old status for undo
+
+
+    // Castling
+    switch move.Promotion {
+    case WHITE_CASTLE_QS:
+        b.Square[0x00] = 0
+        b.Square[0x03] = WR
+
+    case WHITE_CASTLE_KS:
+        b.Square[0x07] = 0
+        b.Square[0x05] = WR
+
+    case BLACK_CASTLE_QS:
+        b.Square[0x70] = 0
+        b.Square[0x73] = BR
+
+    case BLACK_CASTLE_KS:
+        b.Square[0x77] = 0
+        b.Square[0x75] = BR
+    }
+
+
+    // Update king position and castling booleans
+    if b.Square[move.FromSquare] == WK {
+        b.PosWK = move.ToSquare
+        b.BoardStatus.WhiteCastleKing = false
+        b.BoardStatus.WhiteCastleQueen = false
+
+    }
+    if b.Square[move.FromSquare] == BK {
+        b.PosBK = move.ToSquare
+        b.BoardStatus.BlackCastleKing = false
+        b.BoardStatus.BlackCastleQueen = false
+    }
+
+    if b.Square[move.FromSquare] == WR {
+        if move.FromSquare == 0x00 {
+            b.BoardStatus.WhiteCastleQueen = false
+        } else if move.FromSquare == 0x07 {
+            b.BoardStatus.WhiteCastleKing = false
+        }
+    }
+    if b.Square[move.FromSquare] == BR {
+        if move.FromSquare == 0x70 {
+            b.BoardStatus.BlackCastleQueen = false
+        } else if move.FromSquare == 0x77 {
+            b.BoardStatus.BlackCastleKing = false
+        }
+    }
+
+    // Rook captured
+    if move.CapturedPiece == WR {
+        if move.ToSquare == 0x00 {
+            b.BoardStatus.WhiteCastleQueen = false
+        } else if move.ToSquare == 0x07{
+            b.BoardStatus.WhiteCastleKing = false
+        }
+    }
+    if move.CapturedPiece == BR {
+        if move.ToSquare == 0x70 {
+            b.BoardStatus.BlackCastleQueen = false
+        } else if move.ToSquare == 0x77{
+            b.BoardStatus.BlackCastleKing = false
+        }
+    }
+
+
+
+    if b.Square[move.FromSquare] == WP*b.SidePlaying { // Piece moved is a pawn
+        // New en passant
+        if move.FromSquare+0x20*b.SidePlaying == move.ToSquare {
+            b.BoardStatus.EnPassant = move.FromSquare+0x10*b.SidePlaying
+        } else {
+            b.BoardStatus.EnPassant = -1
+            // En passant special capture
+            if b.BoardStatus.EnPassant == move.ToSquare && move.CapturedPiece == BP*b.SidePlaying { // Pawn is on EnPassant square and piece captured is a pawn
+                b.Square[b.BoardStatus.EnPassant-(0x10*b.SidePlaying)] = 0 // Locate and clear the captured en passant pawn
+            }
+        }
+    } else {
+        fmt.Printf("%d\n", b.Square[move.FromSquare])
+        fmt.Printf("%d\n", WP*b.SidePlaying)
+        b.BoardStatus.EnPassant = -1
+    }
+
+    // Make move
     b.Square[move.ToSquare] = b.Square[move.FromSquare]
     b.Square[move.FromSquare] = 0
+
+    // Recalculate threat tables
+    b.setThreats(WHITE_SIDE)
+    b.setThreats(BLACK_SIDE)
+
+    // King in check?
+    if b.SidePlaying == WHITE_SIDE && b.CheckThreat(b.PosWK, b.SidePlaying) || b.SidePlaying == BLACK_SIDE && b.CheckThreat(b.PosBK, b.SidePlaying) { // If the king is in check, the move is illegal
+        legal = false // Needs to complete the move making for a correct undo
+    }
+
+    // Update side playing
+    b.SidePlaying = -b.SidePlaying
+
+    // No of moves and half moves
+    return legal, oldStatus
+
 }
 
 
-func (b *Board) UndoMove(move Move) {
+func (b *Board) UndoMove(move Move, oldStatus Status) {
+
+    // Castling : fix rooks
+    switch move.Promotion {
+    case WHITE_CASTLE_QS:
+        b.Square[0x03] = 0
+        b.Square[0x00] = WR
+
+    case WHITE_CASTLE_KS:
+        b.Square[0x05] = 0
+        b.Square[0x07] = WR
+
+    case BLACK_CASTLE_QS:
+        b.Square[0x73] = 0
+        b.Square[0x70] = BR
+
+    case BLACK_CASTLE_KS:
+        b.Square[0x75] = 0
+        b.Square[0x77] = BR
+    }
+
+    // Update king position
+    if b.Square[move.ToSquare] == WK {
+        b.PosWK = move.FromSquare
+    }
+    if b.Square[move.ToSquare] == BK {
+        b.PosBK = move.FromSquare
+    }
+
+    // En passant special capture
+    if move.ToSquare == oldStatus.EnPassant && b.Square[move.ToSquare] == BP * b.SidePlaying { // Enemy pawn occupies old en passant square
+        b.Square[oldStatus.EnPassant-0x10*b.SidePlaying] = WP*b.SidePlaying // Replace captured en passant pawn
+    }
+
+    // No of moves and half moves
+
     b.Square[move.FromSquare] = b.Square[move.ToSquare]
     b.Square[move.ToSquare] = move.CapturedPiece
+    b.BoardStatus = oldStatus
+
+    // Update side playing
+    b.SidePlaying = -b.SidePlaying
+
+    // Recalculate threat tables
+    b.setThreats(WHITE_SIDE)
+    b.setThreats(BLACK_SIDE)
+
 }
 
 
@@ -129,11 +282,11 @@ func (b *Board) Print() {
 	}
 
 	fmt.Println("Turn:", b.SidePlaying)
-	fmt.Println("White Castle King:", b.WhiteCastleKing)
-	fmt.Println("White Castle Queen:", b.WhiteCastleQueen)
-	fmt.Println("Black Castle King:", b.BlackCastleKing)
-	fmt.Println("Black Castle Queen:", b.BlackCastleQueen)
-	fmt.Println("En Passant:", b.EnPassant)
-	fmt.Println("Half Moves:", b.HalfMoves)
-	fmt.Println("Full Moves:", b.FullMoves)
+	fmt.Println("White Castle King:", b.BoardStatus.WhiteCastleKing)
+	fmt.Println("White Castle Queen:", b.BoardStatus.WhiteCastleQueen)
+	fmt.Println("Black Castle King:", b.BoardStatus.BlackCastleKing)
+	fmt.Println("Black Castle Queen:", b.BoardStatus.BlackCastleQueen)
+	fmt.Println("En Passant:", b.BoardStatus.EnPassant)
+	fmt.Println("Half Moves:", b.BoardStatus.HalfMoves)
+	fmt.Println("Full Moves:", b.BoardStatus.FullMoves)
 }

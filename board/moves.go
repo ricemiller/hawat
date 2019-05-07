@@ -3,7 +3,7 @@ package board
 type Move struct {
     FromSquare      int8
     ToSquare        int8
-    Promotion       int8 // Also denotes castling
+    Promotion       int8 // Also for castling
     CapturedPiece   int8
 }
 
@@ -111,13 +111,13 @@ func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
        if b.CheckEnemy(captureLeft, colour) {
            moves = append(moves, Move{sq, captureLeft, 0, b.Square[captureLeft]})
        }
-       if b.EnPassant == captureLeft {
+       if b.BoardStatus.EnPassant == captureLeft {
            moves = append(moves, Move{sq, captureLeft, 0, BP*colour}) // captures enemy pawn
        }
        if b.CheckEnemy(captureRight, colour) {
            moves = append(moves, Move{sq, captureRight, 0, b.Square[captureRight]})
        }
-       if b.EnPassant == captureRight {
+       if b.BoardStatus.EnPassant == captureRight {
            moves = append(moves, Move{sq, captureRight, 0, BP*colour})
        }
    }
@@ -188,7 +188,7 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    // Castling
    if !b.CheckThreat(sq, colour) { // King cannot castle if in check
        if colour == WHITE_SIDE {
-           if b.WhiteCastleKing {
+           if b.BoardStatus.WhiteCastleKing {
                castle = true
                for _, square := range squaresCastlingWK {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -197,10 +197,10 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    }
                }
                if castle {
-                   moves = append(moves, Move{sq, sq-2, WHITE_CASTLE_KS, 0}) //Promotion also describes castling
+                   moves = append(moves, Move{sq, sq+2, WHITE_CASTLE_KS, 0}) //Promotion also describes castling
                }
            }
-           if b.WhiteCastleQueen {
+           if b.BoardStatus.WhiteCastleQueen {
                castle = true
                for _, square := range squaresCastlingWQ {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -209,11 +209,11 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    }
                }
                if castle {
-                   moves = append(moves, Move{sq, sq+2, WHITE_CASTLE_QS, 0})
+                   moves = append(moves, Move{sq, sq-2, WHITE_CASTLE_QS, 0})
                }
            }
        } else {
-           if b.BlackCastleKing {
+           if b.BoardStatus.BlackCastleKing {
                castle = true
                for _, square := range squaresCastlingBK {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -222,10 +222,10 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    }
                }
                if castle {
-                   moves = append(moves, Move{sq, sq-2, BLACK_CASTLE_KS, 0})
+                   moves = append(moves, Move{sq, sq+2, BLACK_CASTLE_KS, 0})
                }
            }
-           if b.BlackCastleQueen {
+           if b.BoardStatus.BlackCastleQueen {
                castle = true
                for _, square := range squaresCastlingBQ {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -234,7 +234,7 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    }
                }
                if castle {
-                   moves = append(moves, Move{sq, sq+2, BLACK_CASTLE_QS, 0})
+                   moves = append(moves, Move{sq, sq-2, BLACK_CASTLE_QS, 0})
                }
            }
 

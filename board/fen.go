@@ -28,7 +28,7 @@ func (b *Board) setPieces(pieces string) {
 			b.Square[sq] = BQ
 		case 'k':
 			b.Square[sq] = BK
-			b.PosBK = sq
+			b.PosBK = int8(sq)
 		case 'P':
 			b.Square[sq] = WP
 		case 'R':
@@ -41,7 +41,7 @@ func (b *Board) setPieces(pieces string) {
 			b.Square[sq] = WQ
 		case 'K':
 			b.Square[sq] = WK
-			b.PosWK = sq
+			b.PosWK = int8(sq)
 
 		case '/':
 			sq &= 0xf0 // go to beginning of row
@@ -78,13 +78,13 @@ func (b *Board) setCastling(castling string) {
 	for _, c := range castling {
 		switch c {
 		case 'K':
-			b.WhiteCastleKing = true
+			b.BoardStatus.WhiteCastleKing = true
 		case 'Q':
-			b.WhiteCastleQueen = true
+			b.BoardStatus.WhiteCastleQueen = true
 		case 'k':
-			b.BlackCastleKing = true
+			b.BoardStatus.BlackCastleKing = true
 		case 'q':
-			b.BlackCastleQueen = true
+			b.BoardStatus.BlackCastleQueen = true
 		case '-':
 		}
 	}
@@ -92,28 +92,28 @@ func (b *Board) setCastling(castling string) {
 
 func (b *Board) setEnPassant(enPassant string) {
 	if enPassant == "-" {
-		b.EnPassant = -1
+		b.BoardStatus.EnPassant = -1
 	} else {
-		b.EnPassant = ParseAlg_0x88(enPassant)
+		b.BoardStatus.EnPassant = ParseAlg_0x88(enPassant)
 	}
 }
 
 func (b *Board) setHalfMoves(halfMoves string) {
-	b.HalfMoves, _ = strconv.Atoi(halfMoves)
+	b.BoardStatus.HalfMoves, _ = strconv.Atoi(halfMoves)
 }
 
 func (b *Board) setFullMoves(fullMoves string) {
-	b.FullMoves, _ = strconv.Atoi(fullMoves)
+	b.BoardStatus.FullMoves, _ = strconv.Atoi(fullMoves)
 }
 
 func (b *Board) clearBoard() {
 	for i := 0; i < 0x80; i++ {
 		b.Square[i] = 0
 	}
-	b.WhiteCastleKing = false
-	b.WhiteCastleQueen = false
-	b.BlackCastleKing = false
-	b.BlackCastleQueen = false
+	b.BoardStatus.WhiteCastleKing = false
+	b.BoardStatus.WhiteCastleQueen = false
+	b.BoardStatus.BlackCastleKing = false
+	b.BoardStatus.BlackCastleQueen = false
 }
 
 func (b *Board) SetFEN(fen []string) {
