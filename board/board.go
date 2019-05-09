@@ -1,5 +1,5 @@
 package board
-
+// HELLO
 import (
 	"fmt"
 	"strings"
@@ -32,6 +32,8 @@ type Board struct {
 	SidePlaying      int8
     BoardStatus      Status
 }
+
+//sad sdaf sdaf 
 
 func (b *Board) Init() {
 	b.SetFEN(strings.Fields("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
