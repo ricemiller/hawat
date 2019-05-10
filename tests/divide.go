@@ -9,11 +9,11 @@ import (
 
 func test(fen []string, depth int) {
 	var b board.Board
-	fmt.Printf("PERFT TEST\n")
+	fmt.Printf("DIVIDE TEST\n")
 	fmt.Printf("############################################################\n\n")
 
     b.SetFEN(fen)
-    nodes := b.Perft(depth)
+    nodes := b.Divide(depth)
     fmt.Printf("DEPTH: %d, NODES: %d\n", depth, nodes)
 
 }

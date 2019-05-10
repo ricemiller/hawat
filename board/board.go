@@ -102,18 +102,18 @@ func (b *Board) Perft(depth int) int {
     moves := b.Moves()
     nodes := 0
 
-    //DEBUG
-    fmt.Printf("INITIAL STATUS **************************************\n\n")
-    b.Print()
-    fmt.Printf("\n\n")
+    //DEBUG 
+    //fmt.Printf("INITIAL STATUS **************************************\n\n")
+    //b.Print()
+    //fmt.Printf("\n\n")
     //DEBUG
 
     for _, move := range moves {
         isLegal, oldStatus := b.DoMove(move)
         if isLegal {
             // DEBUG
-            b.Print()
-            fmt.Printf("\n")
+            //b.Print()
+            //fmt.Printf("\n")
             // DEBUG
             nodes += b.Perft(depth-1)
         }
@@ -122,6 +122,35 @@ func (b *Board) Perft(depth int) int {
 
 
     return nodes
+}
+
+func (b *Board) Divide(depth int) int {
+    if depth == 0 { return 1 }
+
+    moves := b.Moves()
+    totalNodes := 0
+        //DEBUG
+        //b.Print()
+        //fmt.Printf("\n",)
+        //DEBUG
+
+    for _, move := range moves {
+        isLegal, oldStatus := b.DoMove(move)
+        if isLegal {
+            nodes := b.Perft(depth-1)
+            fmt.Printf("%s%s %d\n", Parse0x88_Alg(move.FromSquare), Parse0x88_Alg(move.ToSquare), nodes)
+            totalNodes += nodes
+        }
+        //DEBUG
+        //b.Print()
+        //fmt.Printf("\n",)
+        //DEBUG
+        b.UndoMove(move, oldStatus)
+    }
+
+
+    fmt.Printf("\nMOVES:%d\n", len(moves))
+    return totalNodes
 }
 
 func (b *Board) DoMove(move Move) (bool, Status) {
