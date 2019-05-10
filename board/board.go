@@ -300,6 +300,7 @@ func (b *Board) UndoMove(move Move, oldStatus Status) {
     // En passant special capture
     if move.ToSquare == oldStatus.EnPassant && b.Square[move.ToSquare] == BP * b.SidePlaying { // Enemy pawn occupies old en passant square
         b.Square[oldStatus.EnPassant-0x10*b.SidePlaying] = WP*b.SidePlaying // Replace captured en passant pawn
+        move.CapturedPiece = 0 //Avoid pawn on EnPassant square
     }
 
     // No of moves and half moves
