@@ -146,6 +146,10 @@ func (b *Board) DoMove(move Move) (bool, Status) {
     case BLACK_CASTLE_KS:
         b.Square[0x77] = 0
         b.Square[0x75] = BR
+    case WQ*b.SidePlaying:
+        b.Square[move.FromSquare] = WQ*b.SidePlaying
+    case WN*b.SidePlaying:
+        b.Square[move.FromSquare] = WN*b.SidePlaying
     }
 
 
@@ -154,14 +158,13 @@ func (b *Board) DoMove(move Move) (bool, Status) {
         b.PosWK = move.ToSquare
         b.BoardStatus.WhiteCastleKing = false
         b.BoardStatus.WhiteCastleQueen = false
-
     }
     if b.Square[move.FromSquare] == BK {
         b.PosBK = move.ToSquare
         b.BoardStatus.BlackCastleKing = false
         b.BoardStatus.BlackCastleQueen = false
     }
-
+    // Castling booleans when rook moves
     if b.Square[move.FromSquare] == WR {
         if move.FromSquare == 0x00 {
             b.BoardStatus.WhiteCastleQueen = false
@@ -193,22 +196,18 @@ func (b *Board) DoMove(move Move) (bool, Status) {
         }
     }
 
-
-
     if b.Square[move.FromSquare] == WP*b.SidePlaying { // Piece moved is a pawn
+        // En passant special capture
+        if b.BoardStatus.EnPassant == move.ToSquare && move.CapturedPiece == BP*b.SidePlaying { // Pawn is on EnPassant square and piece captured is a pawn
+            b.Square[b.BoardStatus.EnPassant-0x10*b.SidePlaying] = 0 // Clear the captured en passant pawn
+        }
         // New en passant
         if move.FromSquare+0x20*b.SidePlaying == move.ToSquare {
             b.BoardStatus.EnPassant = move.FromSquare+0x10*b.SidePlaying
         } else {
             b.BoardStatus.EnPassant = -1
-            // En passant special capture
-            if b.BoardStatus.EnPassant == move.ToSquare && move.CapturedPiece == BP*b.SidePlaying { // Pawn is on EnPassant square and piece captured is a pawn
-                b.Square[b.BoardStatus.EnPassant-(0x10*b.SidePlaying)] = 0 // Locate and clear the captured en passant pawn
-            }
         }
     } else {
-        fmt.Printf("%d\n", b.Square[move.FromSquare])
-        fmt.Printf("%d\n", WP*b.SidePlaying)
         b.BoardStatus.EnPassant = -1
     }
 
