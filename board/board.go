@@ -96,18 +96,40 @@ func (b *Board) setThreats(colour int8) {
         }
 }
 
-func (b *Board) Perft(moves []string) {
-	//TO DO
+func (b *Board) Perft(depth int) int {
+    if depth == 0 { return 1 }
+
+    moves := b.Moves()
+    nodes := 0
+
+    //DEBUG
+    fmt.Printf("INITIAL STATUS **************************************\n\n")
+    b.Print()
+    fmt.Printf("\n\n")
+    //DEBUG
+
+    for _, move := range moves {
+        isLegal, oldStatus := b.DoMove(move)
+        if isLegal {
+            // DEBUG
+            b.Print()
+            fmt.Printf("\n")
+            // DEBUG
+            nodes += b.Perft(depth-1)
+        }
+        b.UndoMove(move, oldStatus)
+    }
+
+
+    return nodes
 }
 
 func (b *Board) DoMove(move Move) (bool, Status) {
     legal := true
+    // Save old status for undo
     oldStatus := b.BoardStatus
 
-    // Save old status for undo
-
-
-    // Castling
+    // Castling and pawn promotion
     switch move.Promotion {
     case WHITE_CASTLE_QS:
         b.Square[0x00] = 0
