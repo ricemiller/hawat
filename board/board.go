@@ -265,7 +265,7 @@ func (b *Board) DoMove(move Move) (bool, Status) {
 
 func (b *Board) UndoMove(move Move, oldStatus Status) {
 
-    // Castling : fix rooks
+    // Castling: fix rooks, Promotion: unpromote pawn
     switch move.Promotion {
     case WHITE_CASTLE_QS:
         b.Square[0x03] = 0
@@ -282,6 +282,11 @@ func (b *Board) UndoMove(move Move, oldStatus Status) {
     case BLACK_CASTLE_KS:
         b.Square[0x75] = 0
         b.Square[0x77] = BR
+
+    default:
+        if move.Promotion != 0 {
+            b.Square[move.ToSquare] = WP * -b.SidePlaying //Unpromote
+        }
     }
 
     // Update king position
