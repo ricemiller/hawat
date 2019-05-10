@@ -6,7 +6,6 @@ import (
     "strings"
 )
 
-
 func testWhite() {
     fmt.Printf("TESTING WHITE PAWN MOVES\n")
     fmt.Printf("############################################################\n\n")
