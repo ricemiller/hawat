@@ -175,11 +175,12 @@ func (b *Board) DoMove(move Move) (bool, Status) {
     case BLACK_CASTLE_KS:
         b.Square[0x77] = 0
         b.Square[0x75] = BR
-    case WQ*b.SidePlaying:
-        b.Square[move.FromSquare] = WQ*b.SidePlaying
-    case WN*b.SidePlaying:
-        b.Square[move.FromSquare] = WN*b.SidePlaying
-    }
+
+    default:
+        if move.Promotion != 0 {
+            b.Square[move.FromSquare] = move.Promotion
+        }
+}
 
 
     // Update king position and castling booleans

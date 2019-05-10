@@ -90,15 +90,27 @@ func (b *Board) genMovesPawn(sq int8, colour int8) []Move {
        if b.CheckEmpty(push) {
            moves = append(moves, Move{sq, push, WN*colour, 0})
            moves = append(moves, Move{sq, push, WQ*colour, 0}) // Only promotes to queen and knight, no advantage on bishop or rook over queen
+           //DEBUG: Just for PERFT
+           moves = append(moves, Move{sq, push, WR*colour, 0})
+           moves = append(moves, Move{sq, push, WB*colour, 0})
+           //DEBUG
        }
        // Captures + Promotion
        if b.CheckEnemy(captureLeft, colour) {
            moves = append(moves, Move{sq, captureLeft, WN*colour, b.Square[captureLeft]})
            moves = append(moves, Move{sq, captureLeft, WQ*colour, b.Square[captureLeft]})
+           //DEBUG: Just for PERFT
+           moves = append(moves, Move{sq, captureLeft, WR*colour, b.Square[captureLeft]})
+           moves = append(moves, Move{sq, captureLeft, WB*colour, b.Square[captureLeft]})
+           //DEBUG
        }
        if b.CheckEnemy(captureRight, colour) {
            moves = append(moves, Move{sq, captureRight, WN*colour, b.Square[captureRight]})
            moves = append(moves, Move{sq, captureRight, WQ*colour, b.Square[captureRight]})
+           //DEBUG: Just for PERFT
+           moves = append(moves, Move{sq, captureRight, WR*colour, b.Square[captureRight]})
+           moves = append(moves, Move{sq, captureRight, WB*colour, b.Square[captureRight]})
+           //DEBUG
        }
    } else {
        if b.CheckEmpty(push) {
