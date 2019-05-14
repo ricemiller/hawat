@@ -199,8 +199,8 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
 
    // Castling
    if !b.CheckThreat(sq, colour) { // King cannot castle if in check
-       if colour == WHITE_SIDE {
-           if b.BoardStatus.WhiteCastleKing {
+       if colour == WHITE_SIDE && b.PosWK == 0x04 {
+           if b.BoardStatus.WhiteCastleKing && b.Square[0x07] == WR {
                castle = true
                for _, square := range squaresCastlingWK {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -212,7 +212,7 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    moves = append(moves, Move{sq, sq+2, WHITE_CASTLE_KS, 0}) //Promotion also describes castling
                }
            }
-           if b.BoardStatus.WhiteCastleQueen {
+           if b.BoardStatus.WhiteCastleQueen && b.Square[0x00] == WR {
                castle = true
                for _, square := range squaresCastlingWQ {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -224,8 +224,8 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    moves = append(moves, Move{sq, sq-2, WHITE_CASTLE_QS, 0})
                }
            }
-       } else {
-           if b.BoardStatus.BlackCastleKing {
+       } else if b.PosBK == 0x74 {
+           if b.BoardStatus.BlackCastleKing && b.Square[0x77] == BR {
                castle = true
                for _, square := range squaresCastlingBK {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
@@ -237,7 +237,7 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
                    moves = append(moves, Move{sq, sq+2, BLACK_CASTLE_KS, 0})
                }
            }
-           if b.BoardStatus.BlackCastleQueen {
+           if b.BoardStatus.BlackCastleQueen && b.Square[0x70] == BR {
                castle = true
                for _, square := range squaresCastlingBQ {
                    if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
