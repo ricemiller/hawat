@@ -6,10 +6,11 @@ import (
 	"bufio"
 	"hawat/board"
 	"os"
+	"strconv"
 	"strings"
 )
 
-var ALLOWED_COMMANDS = [...]string{"uci", "debug", "isready", "setoption", "register", "ucinewgame", "position", "go", "stop", "ponderhit", "quit", "print", "perft"}
+var ALLOWED_COMMANDS = [...]string{"uci", "debug", "isready", "setoption", "register", "ucinewgame", "position", "go", "stop", "ponderhit", "quit", "print", "perft", "divide"}
 
 const ENGINE_NAME = "Hawat"
 const ENGINE_AUTHOR = "ricemiller"
@@ -86,7 +87,7 @@ func main() {
 				fmt.Printf("readyok\n")
 
 			case "setoption":
-				// RECIEVE OPTIONS
+				// RECEIVE OPTIONS
 
 			case "register":
 				fmt.Printf("This is FOSS, baby\n")
@@ -113,7 +114,7 @@ func main() {
 					if len(cmd) > 0 {
 						if cmd[0] == "moves" {
 							cmd = cmd[1:]
-							b.Moves(cmd)
+							b.Moves()
 						}
 					}
 				}
@@ -128,11 +129,31 @@ func main() {
 				b.Print()
 
 			case "perft":
-				b.Perft()
+				cmd = cmd[1:]
+				if len(cmd) > 0 {
+					depth, _ := strconv.Atoi(cmd[0])
+					fmt.Printf("PERFT TEST\n")
+					fmt.Printf("############################################################\n\n")
+
+					nodes := b.Perft(depth)
+					fmt.Printf("DEPTH: %d, NODES: %d\n", depth, nodes)
+				}
+
+			case "divide":
+				cmd = cmd[1:]
+				if len(cmd) > 0 {
+					depth, _ := strconv.Atoi(cmd[0])
+					fmt.Printf("DIVIDE TEST\n")
+					fmt.Printf("############################################################\n\n")
+
+					nodes := b.Divide(depth)
+					fmt.Printf("DEPTH: %d, NODES: %d\n", depth, nodes)
+				}
 
 			case "quit":
 				os.Exit(0)
 			default:
+				fmt.Println("Command not found")
 			}
 		}
 	}

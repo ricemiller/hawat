@@ -46,19 +46,19 @@ func (b *Board) CheckThreat(sq int8, colourPlaying int8) bool {
 }
 
 func (b *Board) CheckAlly(sq int8, colourPlaying int8) bool {
-	return (b.Square[sq]*colourPlaying > 0)
+	return b.Square[sq]*colourPlaying > 0
 }
 
 func (b *Board) CheckEnemy(sq int8, colourPlaying int8) bool {
-	return (b.Square[sq]*colourPlaying < 0)
+	return b.Square[sq]*colourPlaying < 0
 }
 
 func (b *Board) CheckEmpty(sq int8) bool {
-	return (b.Square[sq] == EMPTY)
+	return b.Square[sq] == EMPTY
 }
 
 func (b *Board) Moves() []Move { //ADD DEPTH LATER ON
-    var moves = []Move{}
+	var moves []Move
 	for i := int8(0); i < 0x78; i++ {
 		if b.CheckAlly(i, b.SidePlaying) {
             moves = append(moves, b.GenMoves(i, b.Square[i])...)
@@ -68,7 +68,7 @@ func (b *Board) Moves() []Move { //ADD DEPTH LATER ON
 }
 
 func (b *Board) setThreats(colour int8) {
-    var threats = []Move{}
+	var threats []Move
 	for i := int8(0); i < 0x78; i++ {
 
         // Get all enemmy attack moves
@@ -320,8 +320,8 @@ func (b *Board) UndoMove(move Move, oldStatus Status) {
 
 
 func (b *Board) Print() {
-	var s = []string{}
-	var board = [][]string{}
+	var s []string
+	var board [][]string
 
 	for i := int8(0); i < 0x78; i++ {
 		if CheckValidSquare(i) {
