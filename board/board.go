@@ -138,7 +138,20 @@ func (b *Board) Divide(depth int) int {
         isLegal, oldStatus := b.DoMove(move)
         if isLegal {
             nodes := b.Perft(depth-1)
-            fmt.Printf("%s%s %d\n", Parse0x88_Alg(move.FromSquare), Parse0x88_Alg(move.ToSquare), nodes)
+            startingMove := fmt.Sprintf("%s%s", Parse0x88_Alg(move.FromSquare), Parse0x88_Alg(move.ToSquare))
+            if move.Promotion == WQ || move.Promotion == BQ {
+            	startingMove = startingMove + "q"
+			}
+			if move.Promotion == WR || move.Promotion == BR {
+				startingMove = startingMove + "r"
+			}
+			if move.Promotion == WN || move.Promotion == BN {
+				startingMove = startingMove + "n"
+			}
+			if move.Promotion == WB || move.Promotion == BB {
+				startingMove = startingMove + "b"
+			}
+			movesMap[startingMove] = nodes
             totalNodes += nodes
         }
         //DEBUG
