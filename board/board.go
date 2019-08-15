@@ -31,6 +31,7 @@ type Board struct {
 	PosWK            int8
 	SidePlaying      int8
     BoardStatus      Status
+	FEN 			 string
 }
 
 func (b *Board) Init() {
@@ -124,8 +125,11 @@ func (b *Board) Perft(depth int) int {
     return nodes
 }
 
-func (b *Board) Divide(depth int) int {
-    if depth == 0 { return 1 }
+func (b *Board) Divide(depth int) (map[string]int, int) {
+	movesMap := make(map[string]int)
+    if depth == 0 {
+    	return movesMap, 1
+    }
 
     moves := b.Moves()
     totalNodes := 0
@@ -162,8 +166,7 @@ func (b *Board) Divide(depth int) int {
     }
 
 
-    fmt.Printf("\nMOVES:%d\n", len(moves))
-    return totalNodes
+    return movesMap, totalNodes
 }
 
 func (b *Board) DoMove(move Move) (bool, Status) {

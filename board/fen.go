@@ -128,4 +128,9 @@ func (b *Board) SetFEN(fen []string) {
     b.setThreats(WHITE_SIDE)
     b.setThreats(BLACK_SIDE)
 
+	b.FEN = ""
+	for _, s := range fen {
+		b.FEN = b.FEN + " " + s
+	}
+
 }
