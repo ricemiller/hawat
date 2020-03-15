@@ -208,11 +208,20 @@ func main() {
 						fmt.Printf("%s\t%d\t\t\t%d %s\n", node, numNodes, movesSF[node], warning)
 					}
 
-					if !mismatch {
-						fmt.Printf("\n[+] No mismatch found!\n")
-						if len(movesHawat) != len(movesSF){
-							fmt.Printf("[!] Different number of results!")
+					if len(movesHawat) != len(movesSF) {
+						fmt.Printf("[!] Stockfish found the following additional moves:")
+						if len(movesHawat) < len(movesSF) {
+							for node := range movesSF {
+								_, present := movesHawat[node]
+								if !present {
+									fmt.Printf(" %s", node)
+								}
+							}
 						}
+
+						fmt.Printf("\n")
+					} else if !mismatch {
+						fmt.Printf("\n[+] No mismatch found!\n")
 					}
 
 					if err != nil {
