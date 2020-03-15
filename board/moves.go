@@ -184,9 +184,9 @@ func (b *Board) genMovesQueen(sq int8, colour int8) []Move {
 func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    var moves []Move
    var targets = []int8{0x10, 0x01, -0x10, -0x01, 0x0f, 0x11, -0x0f, -0x11}
-   var squaresCastlingWQ = []int8{0x02, 0x03}
+   var squaresCastlingWQ = []int8{0x01, 0x03}
    var squaresCastlingWK = []int8{0x05, 0x06}
-   var squaresCastlingBQ = []int8{0x72, 0x73}
+   var squaresCastlingBQ = []int8{0x71, 0x73}
    var squaresCastlingBK = []int8{0x75, 0x76}
    var castle bool
 
