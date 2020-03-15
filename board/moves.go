@@ -184,9 +184,11 @@ func (b *Board) genMovesQueen(sq int8, colour int8) []Move {
 func (b *Board) genMovesKing(sq int8, colour int8) []Move{
    var moves []Move
    var targets = []int8{0x10, 0x01, -0x10, -0x01, 0x0f, 0x11, -0x0f, -0x11}
-   var squaresCastlingWQ = []int8{0x01, 0x03}
+   var squaresCastlingMoveWQ = []int8{0x01, 0x03}
+   var squaresCastlingThreatWQ = []int8{0x02, 0x03}
    var squaresCastlingWK = []int8{0x05, 0x06}
-   var squaresCastlingBQ = []int8{0x71, 0x73}
+   var squaresCastlingMoveBQ = []int8{0x71, 0x73}
+   var squaresCastlingThreatBQ = []int8{0x72, 0x73}
    var squaresCastlingBK = []int8{0x75, 0x76}
    var castle bool
 
@@ -214,10 +216,18 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
            }
            if b.BoardStatus.WhiteCastleQueen && b.Square[0x00] == WR {
                castle = true
-               for _, square := range squaresCastlingWQ {
-                   if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
+               for _, square := range squaresCastlingThreatWQ {
+                   if b.CheckThreat(square, colour) {
                        castle = false
                        break
+                   }
+               }
+               if castle {
+                   for _, square := range squaresCastlingMoveWQ {
+                       if !b.CheckEmpty(square) {
+                           castle = false
+                           break
+                       }
                    }
                }
                if castle {
@@ -239,10 +249,18 @@ func (b *Board) genMovesKing(sq int8, colour int8) []Move{
            }
            if b.BoardStatus.BlackCastleQueen && b.Square[0x70] == BR {
                castle = true
-               for _, square := range squaresCastlingBQ {
-                   if b.CheckThreat(square, colour) || !b.CheckEmpty(square) {
+               for _, square := range squaresCastlingThreatBQ {
+                   if b.CheckThreat(square, colour) {
                        castle = false
                        break
+                   }
+                   if castle {
+                       for _, square := range squaresCastlingMoveBQ {
+                           if !b.CheckEmpty(square) {
+                               castle = false
+                               break
+                           }
+                       }
                    }
                }
                if castle {
